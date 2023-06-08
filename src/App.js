@@ -1,24 +1,35 @@
 import logo from './logo.svg';
 import './App.css';
+import MyProfile from './components/MyProfile';
+import Login from './components/Login';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import keycloak from './config/keycloak';
+import { useEffect } from 'react';
 
 function App() {
+
+  useEffect(() => {
+    keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
+      if (authenticated) {
+        console.log('User is authenticated');
+        console.log('Token:', keycloak.token);
+        // You can now access the token via keycloak.token
+      } else {
+        console.log('User is not authenticated');
+      }
+    }).catch((error) => {
+      console.error('Keycloak initialization error:', error);
+    });
+  }, []);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<MyProfile />} />
+      </Routes>
+    </Router>
   );
 }
 
